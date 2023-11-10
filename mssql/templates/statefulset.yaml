@@ -1,0 +1,100 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Values.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.appLabel }}
+spec:
+  serviceName: {{ .Values.serviceName }}
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.appLabel }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.appLabel }}
+    spec:
+      securityContext:
+        fsGroup: {{ .Values.securityContext.fsGroup }}
+      containers:
+        - name: {{ .Values.container.name }}
+          command: ["/bin/bash", "-c"]
+          image: "{{ .Values.container.image }}"
+          args:
+            - |
+              mkdir -p /var/opt/mssql/sslcert &&
+              chown mssql /var/opt/mssql/sslcert &&
+              chmod 700 /var/opt/mssql/sslcert &&
+              cp /mnt/mssql-certs/tls.crt /var/opt/mssql/sslcert/tls.crt &&
+              cp /mnt/mssql-certs/tls.key /var/opt/mssql/sslcert/tls.key &&
+              chown mssql /var/opt/mssql/sslcert/tls.crt /var/opt/mssql/sslcert/tls.key &&
+              chmod 600 /var/opt/mssql/sslcert/tls.crt /var/opt/mssql/sslcert/tls.key &&
+              cp /var/opt/config/mssql.conf /var/opt/mssql/mssql.conf &&
+              /opt/mssql/bin/sqlservr
+          env:
+            - name: MSSQL_PID
+              value: Developer
+            - name: ACCEPT_EULA
+              value: "Y"
+            - name: MSSQL_AGENT_ENABLED
+              value: "1"
+            - name: MSSQL_SA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mssql-secret
+                  key: MSSQL_SA_PASSWORD
+          volumeMounts:
+            - name: mssql-certs-volume
+              mountPath: /mnt/mssql-certs
+            - name: newmssql
+              mountPath: "/var/opt/mssql"
+            - name: userdata
+              mountPath: "/var/opt/mssql/userdata"
+            - name: userlog
+              mountPath: "/var/opt/mssql/userlog"
+            - name: tempdb
+              mountPath: "/var/opt/mssql/tempdb"
+            - name: mssql-config-volume
+              mountPath: /var/opt/config
+      volumes:
+        - name: mssql-certs-volume
+          secret:
+            secretName: mssql-certs-secret
+        - name: mssql-config-volume
+          configMap:
+            name: mssql
+  volumeClaimTemplates:
+    - metadata:
+        name: newmssql
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 8Gi
+    - metadata:
+        name: userdata
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 8Gi
+    - metadata:
+        name: userlog
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 8Gi
+    - metadata:
+        name: tempdb
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 8Gi
