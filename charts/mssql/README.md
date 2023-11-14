@@ -33,8 +33,9 @@ To uninstall/delete the my-mssql deployment:
 
 ```bash
 helm delete my-mssql
-This command removes all the Kubernetes components associated with the chart and deletes the release.
 ```
+This command removes all the Kubernetes components associated with the chart and deletes the release.
+
 ## Parameters
 
 The following table lists the configurable parameters of the MSSQL chart and their default values.
@@ -87,5 +88,4 @@ helm install my-mssql polyseam/mssql2019-chart -f values.yaml
 If you require TLS/SSL, ensure that cert-manager is installed in your cluster and configure the certificates in the values.yaml file.
 
 ## Additional Information
-For more information on working with MSSQL in Kubernetes, visit MSSQL Kubernetes documentation.
-For more details on using Helm, see Helm documentation.
+For more details on using Helm, see [Helm documentation](https://helm.sh/).
