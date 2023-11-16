@@ -1,0 +1,25 @@
+{{ if .Values.addWindowsLogin }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: krb5-conf
+  namespace: mssql
+data:
+  krb5.conf: |
+    [libdefaults]
+    {{- $parts := splitList "." .Values.dnsUrl -}}
+    {{- $domain := upper (index $parts 1) -}}
+    {{- $extension := upper (index $parts 2) -}}
+    default_realm = {{ $domain }}.{{ $extension }}
+
+    [realms]
+    {{ $domain }}.{{ $extension }} = {
+      kdc = {{ .Values.dnsUrl }}
+      admin_server = {{ .Values.dnsUrl }}
+      default_domain = {{ $domain }}.{{ $extension }}
+    }
+
+    [domain_realm]
+    {{ $domain | lower }}.{{ $extension | lower }} = {{ $domain }}.{{ $extension }}
+    .{{ $domain | lower }}.{{ $extension | lower }} = {{ $domain }}.{{ $extension }}
+{{ end }}

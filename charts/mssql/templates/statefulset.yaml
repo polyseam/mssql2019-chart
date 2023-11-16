@@ -45,6 +45,21 @@ spec:
                 secretKeyRef:
                   name: mssql-secret
                   key: MSSQL_SA_PASSWORD
+      {{- if .Values.addWindowsLogin }}
+      hostAliases:
+        - ip: {{ .Values.dnsIp }}
+          hostnames:
+            - {{ .Values.dnsUrl }}
+            - {{ (index (splitList "." .Values.dnsUrl) 1) }}.{{ (index (splitList "." .Values.dnsUrl) 2) }}
+            - {{ (index (splitList "." .Values.dnsUrl) 1) }}
+      dnsPolicy: "None"
+      dnsConfig:
+        nameservers:
+          - {{ .Values.dnsIp }}
+        searches:
+          - "{{ (index (splitList "." .Values.dnsUrl) 1) }}.{{ (index (splitList "." .Values.dnsUrl) 2) }}"
+          - {{ (index (splitList "." .Values.dnsUrl) 2) }}
+      {{- end }}
           volumeMounts:
             - name: mssql-certs-volume
               mountPath: /mnt/mssql-certs
@@ -58,6 +73,11 @@ spec:
               mountPath: "/var/opt/mssql/tempdb"
             - name: mssql-config-volume
               mountPath: /var/opt/config
+            {{- if .Values.addWindowsLogin }}
+            - name: krb5-conf
+              mountPath: /etc/krb5.conf
+              subPath: krb5.conf
+            {{- end }}  
       volumes:
         - name: mssql-certs-volume
           secret:
@@ -65,6 +85,11 @@ spec:
         - name: mssql-config-volume
           configMap:
             name: mssql
+        {{- if .Values.addWindowsLogin }}
+        - name: krb5-conf
+          configMap:
+            name: krb5-conf
+        {{- end }}
   volumeClaimTemplates:
     - metadata:
         name: newmssql

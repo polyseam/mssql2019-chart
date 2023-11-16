@@ -2,9 +2,29 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ .Values.configMap.name }}
-  namespace: {{ .Values.configMap.namespace }}
+  namespace: {{ .Values.namespace }}
 data:
   mssql.conf: |
-    {{- range .Values.configMap.data.mssqlConfLines }}
-    {{ . }}
-    {{- end }}
+    [EULA]
+    accepteula = {{ .Values.configMap.data.EULA }}
+    accepteulaml = {{ .Values.configMap.data.accepteulaml }}
+
+    [coredump]
+    captureminiandfull = {{ .Values.configMap.data.captureminiandfull }}
+    coredumptype = {{ .Values.configMap.data.coredumptype }}
+
+    [hadr]
+    hadrenabled = {{ .Values.configMap.data.hadrenabled }}
+
+    [language]
+    lcid = {{ .Values.configMap.data.lcid }}
+
+    [network]
+    tlscert = {{ .Values.configMap.data.tlscert }}
+    tlskey = {{ .Values.configMap.data.tlskey }}
+    tlsprotocols = {{ .Values.configMap.data.tlsprotocols }}
+    forceencryption = {{ .Values.configMap.data.forceencryption }}
+    {{ if and .Values.addWindowsLogin .Values.privilegedadaccount }}
+    kerberoskeytabfile = /var/opt/mssql/secrets/mssql.keytab
+    privilegedadaccount = {{ .Values.privilegedadaccount }}
+    {{ end }}
