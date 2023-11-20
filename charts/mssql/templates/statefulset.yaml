@@ -45,21 +45,6 @@ spec:
                 secretKeyRef:
                   name: mssql-secret
                   key: MSSQL_SA_PASSWORD
-      {{- if .Values.addWindowsLogin }}
-      hostAliases:
-        - ip: {{ .Values.dnsIp }}
-          hostnames:
-            - {{ .Values.dnsUrl }}
-            - {{ (index (splitList "." .Values.dnsUrl) 1) }}.{{ (index (splitList "." .Values.dnsUrl) 2) }}
-            - {{ (index (splitList "." .Values.dnsUrl) 1) }}
-      dnsPolicy: "None"
-      dnsConfig:
-        nameservers:
-          - {{ .Values.dnsIp }}
-        searches:
-          - "{{ (index (splitList "." .Values.dnsUrl) 1) }}.{{ (index (splitList "." .Values.dnsUrl) 2) }}"
-          - {{ (index (splitList "." .Values.dnsUrl) 2) }}
-      {{- end }}
           volumeMounts:
             - name: mssql-certs-volume
               mountPath: /mnt/mssql-certs
@@ -78,6 +63,29 @@ spec:
               mountPath: /etc/krb5.conf
               subPath: krb5.conf
             {{- end }}  
+      {{- if .Values.addWindowsLogin }}
+      {{- $parts := splitList "." .Values.dnsUrl }}
+      {{- if gt (len $parts) 1 }}
+      {{- $lastIndex := sub (len $parts) 1 }}
+      {{- $secondLastIndex := sub (len $parts) 2 }}
+      {{- $domain := index $parts $secondLastIndex }}
+      {{- $extension := index $parts $lastIndex }}
+      {{- $fullDomain := printf "%s.%s" $domain $extension }}
+      hostAliases:
+        - ip: "{{ .Values.dnsIp }}"
+          hostnames:
+            - "{{ .Values.dnsUrl }}"
+            - "{{ $fullDomain }}"
+            - "{{ $domain }}"
+      dnsPolicy: "None"
+      dnsConfig:
+        nameservers:
+          - "{{ .Values.dnsIp }}"
+        searches:
+          - "{{ $fullDomain }}"
+          - "{{ $extension }}"
+      {{- end }}
+      {{- end }}
       volumes:
         - name: mssql-certs-volume
           secret:

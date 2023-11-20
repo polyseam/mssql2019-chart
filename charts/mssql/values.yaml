@@ -46,4 +46,4 @@ configMap:
 addWindowsLogin: true
 dnsUrl: polyseam-dc1.polyseam.com
 privilegedadaccount: superuser
-dnsIp: "10.1.0.4"
+dnsIp: 0.0.0.0
