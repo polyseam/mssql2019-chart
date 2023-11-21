@@ -58,6 +58,34 @@ spec:
               mountPath: "/var/opt/mssql/tempdb"
             - name: mssql-config-volume
               mountPath: /var/opt/config
+            {{- if .Values.addWindowsLogin }}
+            - name: krb5-conf
+              mountPath: /etc/krb5.conf
+              subPath: krb5.conf
+            {{- end }}  
+      {{- if .Values.addWindowsLogin }}
+      {{- $parts := splitList "." .Values.dnsUrl }}
+      {{- if gt (len $parts) 1 }}
+      {{- $lastIndex := sub (len $parts) 1 }}
+      {{- $secondLastIndex := sub (len $parts) 2 }}
+      {{- $domain := index $parts $secondLastIndex }}
+      {{- $extension := index $parts $lastIndex }}
+      {{- $fullDomain := printf "%s.%s" $domain $extension }}
+      hostAliases:
+        - ip: "{{ .Values.dnsIp }}"
+          hostnames:
+            - "{{ .Values.dnsUrl }}"
+            - "{{ $fullDomain }}"
+            - "{{ $domain }}"
+      dnsPolicy: "None"
+      dnsConfig:
+        nameservers:
+          - "{{ .Values.dnsIp }}"
+        searches:
+          - "{{ $fullDomain }}"
+          - "{{ $extension }}"
+      {{- end }}
+      {{- end }}
       volumes:
         - name: mssql-certs-volume
           secret:
@@ -65,6 +93,11 @@ spec:
         - name: mssql-config-volume
           configMap:
             name: mssql
+        {{- if .Values.addWindowsLogin }}
+        - name: krb5-conf
+          configMap:
+            name: krb5-conf
+        {{- end }}
   volumeClaimTemplates:
     - metadata:
         name: newmssql

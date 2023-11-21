@@ -28,26 +28,22 @@ certificate:
     - "mssql-0.mssql.svc.cluster.local"
 
 configMap:
-  name: mssql
-  namespace: mssql
+  name: mssql-config
   data:
-    mssqlConfLines:
-      - "[EULA]"
-      - "accepteula = Y"
-      - "accepteulaml = Y"
-      - ""
-      - "[coredump]"
-      - "captureminiandfull = true"
-      - "coredumptype = full"
-      - ""
-      - "[hadr]"
-      - "hadrenabled = 1"
-      - ""
-      - "[language]"
-      - "lcid = 1033"
-      - ""
-      - "[network]"
-      - "tlscert = /var/opt/mssql/sslcert/tls.crt"
-      - "tlskey = /var/opt/mssql/sslcert/tls.key"
-      - "tlsprotocols = 1.2"
-      - "forceencryption = 0"
+    EULA: "Y"
+    accepteulaml: "Y"
+    captureminiandfull: "true"
+    coredumptype: "full"
+    hadrenabled: "1"
+    lcid: "1033"
+    tlscert: "/var/opt/mssql/sslcert/tls.crt"
+    tlskey: "/var/opt/mssql/sslcert/tls.key"
+    tlsprotocols: "1.2"
+    forceencryption: "0"
+
+
+
+addWindowsLogin: true
+dnsUrl: polyseam-dc1.polyseam.com
+privilegedadaccount: superuser
+dnsIp: 0.0.0.0
