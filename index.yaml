@@ -3,6 +3,16 @@ entries:
   mssql:
   - apiVersion: v2
     appVersion: 1.16.0
+    created: "2023-11-21T02:36:14.764290787Z"
+    description: A Mssql 2019 Helm chart for Kubernetes
+    digest: f9e852171371174beb2cc8d45f0ed8f76e3936e341bde85f5f996c53ea8497ea
+    name: mssql
+    type: application
+    urls:
+    - https://github.com/polyseam/mssql2019-chart/releases/download/mssql-0.1.6/mssql-0.1.6.tgz
+    version: 0.1.6
+  - apiVersion: v2
+    appVersion: 1.16.0
     created: "2023-11-14T20:41:48.955423595Z"
     description: A Helm chart for Kubernetes
     digest: c57b81b8e823ac97d76639aa5551edbbaa258b5af499ac9b25706f0154139743
@@ -11,4 +21,4 @@ entries:
     urls:
     - https://github.com/polyseam/mssql2019-chart/releases/download/mssql-0.1.5/mssql-0.1.5.tgz
     version: 0.1.5
-generated: "2023-11-14T20:41:48.955452449Z"
+generated: "2023-11-21T02:36:14.764299172Z"
