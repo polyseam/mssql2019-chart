@@ -43,7 +43,7 @@ spec:
             - name: MSSQL_SA_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: mssql-secret
+                  name: {{ .Values.saPasswordSecret }}
                   key: MSSQL_SA_PASSWORD
           volumeMounts:
             - name: mssql-certs-volume
