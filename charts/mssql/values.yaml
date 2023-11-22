@@ -8,7 +8,7 @@ securityContext:
 container:
   name: mssql
   image: "mcr.microsoft.com/mssql/server:2019-latest"
-
+saPasswordSecret: mssql-secret
 service:
   name: mssql-0
   namespace: mssql
