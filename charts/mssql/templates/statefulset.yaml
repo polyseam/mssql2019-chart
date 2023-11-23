@@ -6,7 +6,7 @@ metadata:
   labels:
     app: {{ .Values.appLabel }}
 spec:
-  serviceName: {{ .Values.serviceName }}
+  serviceName: {{ .Values.service.name }}
   replicas: {{ .Values.replicas }}
   selector:
     matchLabels:
@@ -58,13 +58,13 @@ spec:
               mountPath: "/var/opt/mssql/tempdb"
             - name: mssql-config-volume
               mountPath: /var/opt/config
-            {{- if .Values.addWindowsLogin }}
+            {{- if .Values.windows_auth.addWindowsLogin }}
             - name: krb5-conf
               mountPath: /etc/krb5.conf
               subPath: krb5.conf
             {{- end }}  
-      {{- if .Values.addWindowsLogin }}
-      {{- $parts := splitList "." .Values.dnsUrl }}
+      {{- if .Values.windows_auth.addWindowsLogin }}
+      {{- $parts := splitList "." .Values.windows_auth.dnsUrl }}
       {{- if gt (len $parts) 1 }}
       {{- $lastIndex := sub (len $parts) 1 }}
       {{- $secondLastIndex := sub (len $parts) 2 }}
@@ -72,15 +72,15 @@ spec:
       {{- $extension := index $parts $lastIndex }}
       {{- $fullDomain := printf "%s.%s" $domain $extension }}
       hostAliases:
-        - ip: "{{ .Values.dnsIp }}"
+        - ip: "{{ .Values.windows_auth.dnsIp }}"
           hostnames:
-            - "{{ .Values.dnsUrl }}"
+            - "{{ .Values.windows_auth.dnsUrl }}"
             - "{{ $fullDomain }}"
             - "{{ $domain }}"
       dnsPolicy: "None"
       dnsConfig:
         nameservers:
-          - "{{ .Values.dnsIp }}"
+          - "{{ .Values.windows_auth.dnsIp }}"
         searches:
           - "{{ $fullDomain }}"
           - "{{ $extension }}"
@@ -93,7 +93,7 @@ spec:
         - name: mssql-config-volume
           configMap:
             name: mssql
-        {{- if .Values.addWindowsLogin }}
+        {{- if .Values.windows_auth.addWindowsLogin }}
         - name: krb5-conf
           configMap:
             name: krb5-conf
