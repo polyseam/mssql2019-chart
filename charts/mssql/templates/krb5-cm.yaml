@@ -1,4 +1,4 @@
-{{ if .Values.addWindowsLogin }}
+{{ if .Values.windows_auth.addWindowsLogin }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -7,15 +7,15 @@ metadata:
 data:
   krb5.conf: |
     [libdefaults]
-    {{- $parts := splitList "." .Values.dnsUrl -}}
+    {{- $parts := splitList "." .Values.windows_auth.dnsUrl -}}
     {{- $domain := upper (index $parts 1) -}}
     {{- $extension := upper (index $parts 2) -}}
     default_realm = {{ $domain }}.{{ $extension }}
 
     [realms]
     {{ $domain }}.{{ $extension }} = {
-      kdc = {{ .Values.dnsUrl }}
-      admin_server = {{ .Values.dnsUrl }}
+      kdc = {{ .Values.windows_auth.dnsUrl }}
+      admin_server = {{ .Values.windows_auth.dnsUrl }}
       default_domain = {{ $domain }}.{{ $extension }}
     }
 
