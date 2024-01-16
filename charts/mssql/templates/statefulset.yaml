@@ -58,13 +58,13 @@ spec:
               mountPath: "/var/opt/mssql/tempdb"
             - name: mssql-config-volume
               mountPath: /var/opt/config
-            {{- if .Values.windows_auth.addWindowsLogin }}
+            {{- if .Values.auth.windows.addWindowsLogin }}
             - name: krb5-conf
               mountPath: /etc/krb5.conf
               subPath: krb5.conf
             {{- end }}  
-      {{- if .Values.windows_auth.addWindowsLogin }}
-      {{- $parts := splitList "." .Values.windows_auth.dnsUrl }}
+      {{- if .Values.auth.windows.addWindowsLogin }}
+      {{- $parts := splitList "." .Values.auth.windows.dnsUrl }}
       {{- if gt (len $parts) 1 }}
       {{- $lastIndex := sub (len $parts) 1 }}
       {{- $secondLastIndex := sub (len $parts) 2 }}
@@ -72,15 +72,15 @@ spec:
       {{- $extension := index $parts $lastIndex }}
       {{- $fullDomain := printf "%s.%s" $domain $extension }}
       hostAliases:
-        - ip: "{{ .Values.windows_auth.dnsIp }}"
+        - ip: "{{ .Values.auth.windows.dnsIp }}"
           hostnames:
-            - "{{ .Values.windows_auth.dnsUrl }}"
+            - "{{ .Values.auth.windows.dnsUrl }}"
             - "{{ $fullDomain }}"
             - "{{ $domain }}"
       dnsPolicy: "None"
       dnsConfig:
         nameservers:
-          - "{{ .Values.windows_auth.dnsIp }}"
+          - "{{ .Values.auth.windows.dnsIp }}"
         searches:
           - "{{ $fullDomain }}"
           - "{{ $extension }}"
@@ -93,7 +93,7 @@ spec:
         - name: mssql-config-volume
           configMap:
             name: mssql
-        {{- if .Values.windows_auth.addWindowsLogin }}
+        {{- if .Values.auth.windows.addWindowsLogin }}
         - name: krb5-conf
           configMap:
             name: krb5-conf

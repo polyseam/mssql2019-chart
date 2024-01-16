@@ -24,7 +24,7 @@ data:
     tlskey = {{ .Values.configMap.data.tlskey }}
     tlsprotocols = {{ .Values.configMap.data.tlsprotocols }}
     forceencryption = {{ .Values.configMap.data.forceencryption }}
-    {{- if and .Values.windows_auth.addWindowsLogin .Values.windows_auth.privilegedadaccount }}
+    {{- if and .Values.auth.windows.addWindowsLogin .Values.auth.windows.privilegedadaccount }}
     kerberoskeytabfile = /var/opt/mssql/secrets/mssql.keytab
-    privilegedadaccount = {{ .Values.windows_auth.privilegedadaccount }}
+    privilegedadaccount = {{ .Values.auth.windows.privilegedadaccount }}
     {{- end }}

@@ -41,8 +41,9 @@ configMap:
     forceencryption: "0"
 
 
-windows_auth:
-  addWindowsLogin: true
-  dnsUrl: polyseam-dc1.polyseam.com
-  privilegedadaccount: superuser
-  dnsIp: 0.0.0.0
+auth:
+  windows:
+    addWindowsLogin: true
+    dnsUrl: polyseam-dc1.polyseam.com
+    privilegedadaccount: superuser
+    dnsIp: 0.0.0.0
